@@ -2,6 +2,8 @@
 
 ## Installation
 
+_WIP: Not ready for usage_
+
 ```sh
 $ composer require mikeymike/kraken:^1.0
 ```
@@ -9,12 +11,15 @@ $ composer require mikeymike/kraken:^1.0
 ## Usage
 
 ```php
-
 use MikeyMike\Kraken\Kraken;
+use MikeyMike\Kraken\KrakenOptions;
 
-$kraken = new Kraken('api_key', 'api_secret');
+$krakenOptions = new KrakenOptions('api_key', 'api_secret');
 
-$kraken->compress('http://awesome-website.com/images/header.png');
+// Set options using KrakenOptions methods
+
+$kraken = new Kraken($krakenOptions);
+$kraken->compressUrl('http://awesome-website.com/images/header.png');
 ```
 
 ## Tests
