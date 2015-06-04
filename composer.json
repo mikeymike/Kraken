@@ -14,5 +14,13 @@
     },
     "require": {
 
+    },
+    "autoload" : {
+        "psr-4" : {
+            "MikeyMike\\Kraken\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": { "MikeyMike\\Kraken\\": "test/" }
     }
 }
