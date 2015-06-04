@@ -39,36 +39,75 @@ class KrakenOptions
     {
         $this->apiKey     = $apiKey;
         $this->apiSecret  = $apiSecret;
-        $this->options    = array_merge_recursive($this->options, $options);
+
+        $this->processOptions($options);
     }
 
     /**
-     * Check the options are valid
-     *
-     * @return bool
+     * @param array $options
+     * @throws \InvalidArgumentException on invalid option key
      */
-    public function validate()
+    private function processOptions($options = [])
     {
-        // TODO: VALIDATE
-        return true;
+        foreach ($options as $option => $value) {
+
+            switch ($option) {
+                case 'lossy':
+
+                    break;
+                case 'dev':
+
+                    break;
+                case 'webp':
+
+                    break;
+                case 'wait':
+
+                    break;
+                case 's3_store':
+
+                    break;
+                case 'cf_store':
+
+                    break;
+                case 'azure_store':
+
+                    break;
+                case 'resize':
+
+                    break;
+
+                default:
+                    throw new \InvalidArgumentException(sprintf('Invalid option passed %s', $option));
+            }
+        }
     }
 
     /**
      * @param bool $useLossy
+     * @param int  $quality
+     *
      * @return $this
      */
-    public function setUseLossy($useLossy = true)
+    public function setLossy($useLossy = true, $quality = 100)
     {
         $this->options['lossy'] = (bool) $useLossy;
+
+        if ($useLossy) {
+            $this->options['quality'] = (int) $quality;
+        } else {
+            unset($this->options['quality']);
+        }
 
         return $this;
     }
 
     /**
      * @param bool $useWebP
+     *
      * @return $this
      */
-    public function setUseWebP($useWebP = true)
+    public function useWebP($useWebP = true)
     {
         $this->options['webp'] = (bool) $useWebP;
 
@@ -77,9 +116,10 @@ class KrakenOptions
 
     /**
      * @param bool $useDevelopment
+     *
      * @return $this
      */
-    public function setUseDevelopment($useDevelopment = true)
+    public function useDevelopment($useDevelopment = true)
     {
         $this->options['dev'] = (bool) $useDevelopment;
 
@@ -90,7 +130,7 @@ class KrakenOptions
      * @param bool $useWait
      * @return $this
      */
-    public function setUseWait($useWait = true)
+    public function waitForResponse($useWait = true)
     {
         $this->options['wait'] = (bool) $useWait;
 
@@ -102,9 +142,10 @@ class KrakenOptions
      * @param string $secret
      * @param string $bucket
      * @param string $region
+     *
      * @return $this
      */
-    public function useAmazonS3($key, $secret, $bucket, $region)
+    public function saveToAmazonS3($key, $secret, $bucket, $region)
     {
         $this->cleanStorageOptions();
 
@@ -119,12 +160,13 @@ class KrakenOptions
     }
 
     /**
-     * @param $account
-     * @param $key
-     * @param $container
+     * @param string $user
+     * @param string $key
+     * @param string $container
+     *
      * @return $this
      */
-    public function useRackspace($user, $key, $container)
+    public function saveToRackspace($user, $key, $container)
     {
         $this->cleanStorageOptions();
 
@@ -138,12 +180,13 @@ class KrakenOptions
     }
 
     /**
-     * @param $account
-     * @param $key
-     * @param $container
+     * @param string $account
+     * @param string $key
+     * @param string $container
+     *
      * @return $this
      */
-    public function useAzure($account, $key, $container)
+    public function saveToAzure($account, $key, $container)
     {
         $this->cleanStorageOptions();
 
@@ -171,40 +214,52 @@ class KrakenOptions
      *
      * @param int $width
      * @param int $height
+     *
+     * @return $this
      */
-    public function useResizeExact($width, $height)
+    public function resizeExact($width, $height)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'exact',
             'width'    => $width,
             'height'   => $height
         ]);
+
+        return $this;
     }
 
     /**
      * Exact height will be set, width will be adjusted according to aspect ratio
      *
      * @param int $height
+     *
+     * @return $this
      */
-    public function useResizePortrait($height)
+    public function resizePortrait($height)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'portrait',
             'height'   => $height
         ]);
+
+        return $this;
     }
 
     /**
      * Exact width will be set, height will be adjusted according to aspect ratio
      *
      * @param int $width
+     *
+     * @return $this
      */
-    public function useResizeLandscape($width)
+    public function resizeLandscape($width)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'landscape',
             'width'    => $width
         ]);
+
+        return $this;
     }
 
     /**
@@ -212,14 +267,18 @@ class KrakenOptions
      *
      * @param int $width
      * @param int $height
+     *
+     * @return $this
      */
-    public function useResizeAuto($width, $height)
+    public function resizeAuto($width, $height)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'auto',
             'width'    => $width,
             'height'   => $height
         ]);
+
+        return $this;
     }
 
     /**
@@ -227,14 +286,18 @@ class KrakenOptions
      *
      * @param int $width
      * @param int $height
+     *
+     * @return $this
      */
-    public function useResizeFit($width, $height)
+    public function resizeFit($width, $height)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'fit',
             'width'    => $width,
             'height'   => $height
         ]);
+
+        return $this;
     }
 
     /**
@@ -242,14 +305,18 @@ class KrakenOptions
      *
      * @param int $width
      * @param int $height
+     *
+     * @return $this
      */
-    public function useResizeCrop($width, $height)
+    public function resizeCrop($width, $height)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'crop',
             'width'    => $width,
             'height'   => $height
         ]);
+
+        return $this;
     }
 
     /**
@@ -257,13 +324,17 @@ class KrakenOptions
      * to make it a square, then resize it to the specified size
      *
      * @param int $size
+     *
+     * @return $this
      */
-    public function useResizeSquare($size)
+    public function resizeSquare($size)
     {
-        $this->useResize([
+        $this->resize([
             'strategy' => 'square',
             'size'     => $size
         ]);
+
+        return $this;
     }
 
     /**
@@ -280,24 +351,65 @@ class KrakenOptions
      * @param int $g
      * @param int $b
      * @param int $a
+     *
+     * @return $this
      */
-    public function useResizeFill($width, $height, $r = 255, $g = 255, $b = 255, $a = 1)
+    public function resizeFill($width, $height, $r = 255, $g = 255, $b = 255, $a = 1)
     {
-        $this->useResize([
+        $this->resize([
             'strategy'   => 'fill',
             'width'      => $width,
             'height'     => $height,
             'background' => sprintf('rgba(%d, %d, %d, %d)', $r, $g, $b, $a)
         ]);
+
+        return $this;
     }
     
     /**
      * Internal resize function for resize strategy functions
-     * TODO: Pointless?
+     *
      * @param array $resizeOptions
      */
-    private function useResize($resizeOptions = [])
+    private function resize($resizeOptions = [])
     {
         $this->options['resize'] = $resizeOptions;
+    }
+
+    /**
+     * @param string      $format
+     * @param null|string $background
+     * @param bool        $keepExtension
+     *
+     * @return $this
+     */
+    public function convertTo($format, $background = '#FFFFFF', $keepExtension = false)
+    {
+        $allowedFormats = ['jpeg', 'png', 'gif'];
+
+        if (!in_array($format, $allowedFormats)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid format %s, must be one of %s', $format, implode(',', $allowedFormats))
+            );
+        }
+
+        // Regex will match hex, rgb, rgba colour options
+        $bgRegex = '/rgb\((\d{1,3}),\s?(\d{1,3}),\s?(\d{1,3})\)';
+        $bgRegex .= '|rgba\((\d{1,3}),\s?(\d{1,3}),\s?(\d{1,3}),\s?(\d)?\.?(\d)\)';
+        $bgRegex .= '|#([a-fA-F0-9]{3}){1,2}\b/';
+
+        if (!preg_match($bgRegex, $background)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid background value %s, must be a valid hex, rgb or rgba string', $background)
+            );
+        }
+
+        $this->options['convert'] = [
+            'format'         => $format,
+            'background'     => $background,
+            'keep_extension' => (bool) $keepExtension
+        ];
+
+        return $this;
     }
 }
