@@ -3,9 +3,11 @@
 namespace MikeyMike\Kraken;
 
 use MikeyMike\Kraken\KrakenOptions;
+use MikeyMike\Kraken\KrakenImage;
 
 /**
  * Class Kraken
+ *
  * @package MikeyMike\Kraken
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
@@ -44,5 +46,21 @@ class Kraken
         $this->options = $options;
     }
 
-    // TODO: Compress / Call API
+    
+    public function compressFromUrl()
+    {
+
+    }
+
+
+    public function compressImage(KrakenImage $image)
+    {
+
+    }
+
+
+    private function sendRequest()
+    {
+
+    }
 }

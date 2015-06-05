@@ -4,29 +4,16 @@ namespace MikeyMike\Kraken;
 
 /**
  * Class KrakenOptions
+ *
  * @package MikeyMike\Kraken
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
 class KrakenOptions
 {
     /**
-     * @var string
-     */
-    private $apiKey;
-
-    /**
-     * @var string
-     */
-    private $apiSecret;
-
-    /**
      * @var array
      */
-    private $options = [
-        'lossy' => true,
-        'dev'   => false,
-        'webp'  => false
-    ];
+    private $options = [];
 
     /**
      * Initialise the API class
@@ -37,10 +24,20 @@ class KrakenOptions
      */
     public function __construct($apiKey, $apiSecret, $options = [])
     {
-        $this->apiKey     = $apiKey;
-        $this->apiSecret  = $apiSecret;
-
+        $this->setAuth($apiKey, $apiSecret);
         $this->processOptions($options);
+    }
+
+    /**
+     * @param $apiKey
+     * @param $apiSecret
+     */
+    private function setAuth($apiKey, $apiSecret)
+    {
+        $this->options['auth'] = [
+            'api_key'    => $apiKey,
+            'api_secret' => $apiSecret
+        ];
     }
 
     /**
@@ -53,30 +50,39 @@ class KrakenOptions
 
             switch ($option) {
                 case 'lossy':
+                    // TODO: Check quality value
 
+                    $this->setLossy($value);
                     break;
                 case 'dev':
-
+                    $this->useDevelopment($value);
                     break;
                 case 'webp':
-
+                    $this->useWebP($value);
                     break;
                 case 'wait':
-
+                    $this->waitForResponse($value);
                     break;
                 case 's3_store':
+                    // TODO: Check all data is set
 
+                    //$this->saveToAmazonS3();
                     break;
                 case 'cf_store':
+                    // TODO: Check all data is set
 
+                    //$this->saveToRackspace();
                     break;
                 case 'azure_store':
+                    // TODO: Check all data is set
 
+                    //$this->saveToAzure();
                     break;
                 case 'resize':
+                    // TODO: Check all data is set
 
+                    //$this->resize();
                     break;
-
                 default:
                     throw new \InvalidArgumentException(sprintf('Invalid option passed %s', $option));
             }
@@ -84,32 +90,51 @@ class KrakenOptions
     }
 
     /**
-     * @param bool $useLossy
-     * @param int  $quality
+     * Apply lossy optimisation to the image
+     *
+     * Quality 'auto' will use Krakens intelligent lossy optimization scheme,
+     * meaning Kraken will intelligently pick the best quality to size ratio for every single image
+     *
+     * @param bool       $useLossy
+     * @param int|string $quality
      *
      * @return $this
      */
-    public function setLossy($useLossy = true, $quality = 100)
+    public function setLossy($useLossy = true, $quality = 'auto')
     {
+        if (!$useLossy) {
+            unset($this->options['lossy']);
+            unset($this->options['quality']);
+
+            return $this;
+        }
+
         $this->options['lossy'] = (bool) $useLossy;
 
-        if ($useLossy) {
-            $this->options['quality'] = (int) $quality;
-        } else {
+        if ($quality === 'auto') {
             unset($this->options['quality']);
+        } else {
+            $this->options['quality'] = (int) $quality;
         }
 
         return $this;
     }
 
     /**
+     * Convert to WebP format. Optionally use setLossy method to
+     * apply a lossy conversion.
+     *
      * @param bool $useWebP
      *
      * @return $this
      */
     public function useWebP($useWebP = true)
     {
-        $this->options['webp'] = (bool) $useWebP;
+        if ($useWebP) {
+            $this->options['webp'] = (bool) $useWebP;
+        } else {
+            unset($this->options['webp']);
+        }
 
         return $this;
     }
@@ -121,7 +146,11 @@ class KrakenOptions
      */
     public function useDevelopment($useDevelopment = true)
     {
-        $this->options['dev'] = (bool) $useDevelopment;
+        if ($useDevelopment) {
+            $this->options['dev'] = (bool)$useDevelopment;
+        } else {
+            unset($this->options['dev']);
+        }
 
         return $this;
     }
@@ -132,7 +161,11 @@ class KrakenOptions
      */
     public function waitForResponse($useWait = true)
     {
-        $this->options['wait'] = (bool) $useWait;
+        if ($useWait) {
+            $this->options['wait'] = (bool)$useWait;
+        } else {
+            unset($this->options['wait']);
+        }
 
         return $this;
     }
@@ -377,6 +410,25 @@ class KrakenOptions
     }
 
     /**
+     * Convert different images from one type/format to another
+     *
+     * format         The image format you wish to convert your image into.
+     *                This can accept one of the following values: jpeg, png or gif.
+     *
+     * background     Background image when converting from transparent
+     *                file formats like PNG or GIF into fully opaque format
+     *                like JPEG. The background property can be passed in HEX
+     *                notation "#f60" or "#ff6600", RGB "rgb(255, 0, 0)"
+     *                or RGBA "rgba(91, 126, 156, 0.7)". The default background color is white.
+     *
+     * keep_extension A boolean value (true or false) instructing Kraken API
+     *                whether or not the original extension should be kept
+     *                in the output filename. For example when converting "image.jpg"
+     *                into PNG format with this flag turned on the output image name
+     *                will still be "image.jpg" even though the image has been
+     *                converted into a PNG. The default value is false meaning the
+     *                correct extension will always be set.
+     *
      * @param string      $format
      * @param null|string $background
      * @param bool        $keepExtension
@@ -411,5 +463,15 @@ class KrakenOptions
         ];
 
         return $this;
+    }
+
+    /**
+     * Get the built options array
+     *
+     * @return array
+     */
+    public function getConfiguredOptions()
+    {
+        return $this->options;
     }
 }
