@@ -20,12 +20,10 @@ class KrakenOptions
      *
      * @param string $apiKey
      * @param string $apiSecret
-     * @param array  $options
      */
-    public function __construct($apiKey, $apiSecret, $options = [])
+    public function __construct($apiKey, $apiSecret)
     {
         $this->setAuth($apiKey, $apiSecret);
-        $this->processOptions($options);
     }
 
     /**
@@ -39,56 +37,7 @@ class KrakenOptions
             'api_secret' => $apiSecret
         ];
     }
-
-    /**
-     * @param array $options
-     * @throws \InvalidArgumentException on invalid option key
-     */
-    private function processOptions($options = [])
-    {
-        foreach ($options as $option => $value) {
-
-            switch ($option) {
-                case 'lossy':
-                    // TODO: Check quality value
-
-                    $this->setLossy($value);
-                    break;
-                case 'dev':
-                    $this->useDevelopment($value);
-                    break;
-                case 'webp':
-                    $this->useWebP($value);
-                    break;
-                case 'wait':
-                    $this->waitForResponse($value);
-                    break;
-                case 's3_store':
-                    // TODO: Check all data is set
-
-                    //$this->saveToAmazonS3();
-                    break;
-                case 'cf_store':
-                    // TODO: Check all data is set
-
-                    //$this->saveToRackspace();
-                    break;
-                case 'azure_store':
-                    // TODO: Check all data is set
-
-                    //$this->saveToAzure();
-                    break;
-                case 'resize':
-                    // TODO: Check all data is set
-
-                    //$this->resize();
-                    break;
-                default:
-                    throw new \InvalidArgumentException(sprintf('Invalid option passed %s', $option));
-            }
-        }
-    }
-
+    
     /**
      * Apply lossy optimisation to the image
      *
@@ -378,12 +327,12 @@ class KrakenOptions
      * The background property is formatted in RGBA "rgba(91, 126, 156, 0.7)".
      * The default background color is white
      *
-     * @param int $width
-     * @param int $height
-     * @param int $r
-     * @param int $g
-     * @param int $b
-     * @param int $a
+     * @param int       $width
+     * @param int       $height
+     * @param int       $r
+     * @param int       $g
+     * @param int       $b
+     * @param int|float $a
      *
      * @return $this
      */
@@ -393,7 +342,7 @@ class KrakenOptions
             'strategy'   => 'fill',
             'width'      => $width,
             'height'     => $height,
-            'background' => sprintf('rgba(%d, %d, %d, %d)', $r, $g, $b, $a)
+            'background' => sprintf('rgba(%d, %d, %d, %.1f)', $r, $g, $b, $a)
         ]);
 
         return $this;
