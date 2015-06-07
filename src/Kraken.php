@@ -29,30 +29,20 @@ class Kraken
      */
     public function __construct(KrakenOptions $options)
     {
-        $this->setOptions($options);
-    }
-
-    /**
-     * Validate and set API options
-     *
-     * @param KrakenOptions $options
-     */
-    public function setOptions(KrakenOptions $options)
-    {
-        if (!$options->validate()) {
-            throw new \InvalidArgumentException('Options are invalid');
-        }
-
         $this->options = $options;
     }
 
-    
-    public function compressFromUrl()
+    /**
+     * @param string $url
+     */
+    public function compressFromUrl($url)
     {
 
     }
 
-
+    /**
+     * @param KrakenImage $image
+     */
     public function compressImage(KrakenImage $image)
     {
 
