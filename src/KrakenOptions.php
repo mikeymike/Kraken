@@ -13,7 +13,9 @@ class KrakenOptions
     /**
      * @var array
      */
-    private $options = [];
+    private $options = [
+        'wait' => true
+    ];
 
     /**
      * Initialise the API class
@@ -36,6 +38,16 @@ class KrakenOptions
             'api_key'    => $apiKey,
             'api_secret' => $apiSecret
         ];
+    }
+
+
+    public function setSourceImageUrl($url)
+    {
+        // TODO: Publically Accesible Validate URL ??
+
+        $this->options['url'] = $url;
+
+        return $this;
     }
     
     /**
@@ -118,6 +130,8 @@ class KrakenOptions
 
         return $this;
     }
+
+    // TODO: Set callback URL, will replace waitForResponse and vice versa
 
     /**
      * @param string $key
