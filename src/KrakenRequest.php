@@ -5,8 +5,8 @@ namespace MikeyMike\Kraken;
 use MikeyMike\Kraken\KrakenOptions;
 use MikeyMike\Kraken\KrakenImage;
 use MikeyMike\Kraken\KrakenResponse;
-use Unirest\Request;
-use Unirest\Response;
+use Buzz\Browser;
+use Buzz\Message\Response;
 
 /**
  * Class Kraken
@@ -28,7 +28,7 @@ class KrakenRequest
      *
      * @return KrakenResponse
      */
-    public static function compressFromUrl(KrakenOptions $options, $url = null)
+    public static function compressFromUrl(KrakenOptions $options, Browser $buzz, $url = null)
     {
         if ($url !== null) {
             $options->setSourceImageUrl($url);
@@ -36,10 +36,19 @@ class KrakenRequest
 
         $apiEndpoint = sprintf('%s/v1/url', self::API_URL);
 
-        $response = Request::post($apiEndpoint, [], json_encode($options->getConfiguredOptions()));
+        try {
+            $buzz->setClient(new \Buzz\Client\Curl);
+            $response = $buzz->post(
+                $apiEndpoint,
+                ['Content-Type' => 'application/json'],
+                json_encode($options->getConfiguredOptions())
+            );
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+//            throw $e;
+        }
 
-        return $response;
-//        return self::parseResponse($response);
+        return self::parseResponse($response);
     }
 
     /**
@@ -59,15 +68,15 @@ class KrakenRequest
      */
     private static function parseResponse(Response $response)
     {
-        // TODO: Handle when Response is not stdClass etc
+        $body = json_decode($response->getContent());
         return new KrakenResponse(
-            $response->code,
-            $response->body->success,
-            $response->body->filename,
-            $response->body->original_size,
-            $response->body->kraked_size,
-            $response->body->saved_bytes,
-            $response->body->kraked_url
+            $response->getStatusCode(),
+            $body->success,
+            $body->file_name,
+            $body->original_size,
+            $body->kraked_size,
+            $body->saved_bytes,
+            $body->kraked_url
         );
     }
 }
