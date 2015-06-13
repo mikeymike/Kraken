@@ -40,11 +40,13 @@ class KrakenOptions
         ];
     }
 
-
+    /**
+     * @param $url
+     *
+     * @return $this
+     */
     public function setSourceImageUrl($url)
     {
-        // TODO: Publically Accesible Validate URL ??
-
         $this->options['url'] = $url;
 
         return $this;
@@ -123,6 +125,7 @@ class KrakenOptions
     public function waitForResponse($useWait = true)
     {
         if ($useWait) {
+            unset($this->options['callback_url']);
             $this->options['wait'] = (bool)$useWait;
         } else {
             unset($this->options['wait']);
@@ -131,7 +134,18 @@ class KrakenOptions
         return $this;
     }
 
-    // TODO: Set callback URL, will replace waitForResponse and vice versa
+    /**
+     * @param $url
+     *
+     * @return $this
+     */
+    public function setCallbackUrl($url)
+    {
+        unset($this->options['wait']);
+        $this->options['callback_url'] = $url;
+
+        return $this;
+    }
 
     /**
      * @param string $key

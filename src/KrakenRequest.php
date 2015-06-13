@@ -60,7 +60,7 @@ class KrakenRequest
     }
 
     /**
-     * Convert Unirest response to KrakenResponse
+     * Convert Buzz response to KrakenResponse
      *
      * @param Response $response
      *
@@ -69,14 +69,17 @@ class KrakenRequest
     private static function parseResponse(Response $response)
     {
         $body = json_decode($response->getContent());
-        return new KrakenResponse(
-            $response->getStatusCode(),
-            $body->success,
-            $body->file_name,
-            $body->original_size,
-            $body->kraked_size,
-            $body->saved_bytes,
-            $body->kraked_url
-        );
+
+        if ($response->getStatusCode() === 200) {
+            return KrakenResponse::success(
+                $body->file_name,
+                $body->original_size,
+                $body->kraked_size,
+                $body->saved_bytes,
+                $body->kraked_url
+            );
+        }
+
+        return KrakenResponse::error($response->getStatusCode(), $body->error);
     }
 }

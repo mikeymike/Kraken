@@ -45,25 +45,57 @@ class KrakenResponse
     private $krakedUrl;
 
     /**
+     * @var string
+     */
+    private $error;
+
+    /**
      * KrakenResponse constructor
      *
      * @param int    $code
      * @param bool   $success
-     * @param string $filename
-     * @param int    $originalSize
-     * @param int    $krakedSize
-     * @param int    $savedBytes
-     * @param string $krake$response->body->dUrl
      */
-    public function __construct($code, $success, $filename, $originalSize, $krakedSize, $savedBytes, $krakedUrl)
+    private function __construct($code, $success)
     {
         $this->code         = $code;
         $this->success      = $success;
-        $this->filename     = $filename;
-        $this->originalSize = $originalSize;
-        $this->krakedSize   = $krakedSize;
-        $this->savedBytes   = $savedBytes;
-        $this->krakedUrl    = $krakedUrl;
+    }
+
+    /**
+     * @param $filename
+     * @param $originalSize
+     * @param $krakedSize
+     * @param $savedBytes
+     * @param $krakedUrl
+     *
+     * return KrakenResponse
+     */
+    public static function success($filename, $originalSize, $krakedSize, $savedBytes, $krakedUrl)
+    {
+        $response = new self(200, true);
+
+        $response->filename     = $filename;
+        $response->originalSize = $originalSize;
+        $response->krakedSize   = $krakedSize;
+        $response->savedBytes   = $savedBytes;
+        $response->krakedUrl    = $krakedUrl;
+
+        return $response;
+    }
+
+    /**
+     * @param $code
+     * @param $reason
+     *
+     * @return KrakenResponse
+     */
+    public static function error($code, $reason)
+    {
+        $response = new self($code, false);
+
+        $response->error = $reason;
+
+        return $response;
     }
 
     /**
@@ -75,27 +107,11 @@ class KrakenResponse
     }
 
     /**
-     * @param int $code
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
-    }
-
-    /**
      * @return boolean
      */
     public function wasSuccessful()
     {
         return $this->success;
-    }
-
-    /**
-     * @param boolean $success
-     */
-    public function setSuccess($success)
-    {
-        $this->success = $success;
     }
 
     /**
@@ -107,27 +123,11 @@ class KrakenResponse
     }
 
     /**
-     * @param string $filename
-     */
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-    }
-
-    /**
      * @return int
      */
     public function getOriginalSize()
     {
         return $this->originalSize;
-    }
-
-    /**
-     * @param int $originalSize
-     */
-    public function setOriginalSize($originalSize)
-    {
-        $this->originalSize = $originalSize;
     }
 
     /**
@@ -139,27 +139,11 @@ class KrakenResponse
     }
 
     /**
-     * @param int $krakedSize
-     */
-    public function setKrakedSize($krakedSize)
-    {
-        $this->krakedSize = $krakedSize;
-    }
-
-    /**
      * @return int
      */
     public function getSavedBytes()
     {
         return $this->savedBytes;
-    }
-
-    /**
-     * @param int $savedBytes
-     */
-    public function setSavedBytes($savedBytes)
-    {
-        $this->savedBytes = $savedBytes;
     }
 
     /**
@@ -171,10 +155,10 @@ class KrakenResponse
     }
 
     /**
-     * @param string $krakedUrl
+     * @return string
      */
-    public function setKrakedUrl($krakedUrl)
+    public function getError()
     {
-        $this->krakedUrl = $krakedUrl;
+        return $this->error;
     }
 }
