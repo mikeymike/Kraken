@@ -16,14 +16,15 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->setLossy(true, 70);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'    => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
                 ],
                 'lossy'   => true,
-                'quality' => 70
+                'quality' => 70,
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -35,12 +36,13 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->setLossy(false);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -53,13 +55,14 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
         $krakenOptions->setLossy(true, 50);
         $krakenOptions->setLossy(true);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
                 ],
-                'lossy' => true
+                'lossy' => true,
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -71,13 +74,14 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->useWebP(true);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
                 ],
-                'webp' => true
+                'webp' => true,
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -90,12 +94,13 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
         $krakenOptions->useWebP(true);
         $krakenOptions->useWebP(false);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -108,14 +113,15 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
         $krakenOptions->useWebP(true);
         $krakenOptions->setLossy(true);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
                 ],
                 'webp'  => true,
-                'lossy' => true
+                'lossy' => true,
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -127,13 +133,14 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->useDevelopment(true);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
                 ],
-                'dev'  => true
+                'dev'  => true,
+                'wait' => true,
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -146,12 +153,13 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
         $krakenOptions->useDevelopment(true);
         $krakenOptions->useDevelopment(false);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
                     'api_secret' => 'fake_secret'
-                ]
+                ],
+                'wait' => true,
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -163,7 +171,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->waitForResponse(true);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
@@ -182,7 +190,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
         $krakenOptions->waitForResponse(true);
         $krakenOptions->waitForResponse(false);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth'  => [
                     'api_key'    => 'fake_key',
@@ -199,7 +207,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->saveToAmazonS3('key', 'secret', 'bucket', 'region');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -209,8 +217,12 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'key' => 'key',
                     'secret' => 'secret',
                     'bucket' => 'bucket',
-                    'region' => 'region'
-                ]
+                    'region' => 'region',
+                    'path' => '/',
+                    'acl' => 'public_read',
+                    'headers' => []
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -222,7 +234,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->saveToRackspace('user', 'key', 'container');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -231,8 +243,10 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                 'cf_store' => [
                     'user' => 'user',
                     'key' => 'key',
-                    'container' => 'container'
-                ]
+                    'container' => 'container',
+                    'path' => '/'
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -244,7 +258,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->saveToAzure('account', 'key', 'container');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -253,8 +267,10 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                 'azure_store' => [
                     'account' => 'account',
                     'key' => 'key',
-                    'container' => 'container'
-                ]
+                    'container' => 'container',
+                    'path' => '/'
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -269,7 +285,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
             ->saveToRackspace('user', 'key', 'container')
             ->saveToAzure('account', 'key', 'container');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -278,8 +294,10 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                 'azure_store' => [
                     'account' => 'account',
                     'key' => 'key',
-                    'container' => 'container'
-                ]
+                    'container' => 'container',
+                    'path' => '/'
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -291,7 +309,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeExact(100, 100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -301,7 +319,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'strategy' => 'exact',
                     'width' => 100,
                     'height' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -313,7 +332,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizePortrait(100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -322,7 +341,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                 'resize' => [
                     'strategy' => 'portrait',
                     'height' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -334,7 +354,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeLandscape(100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -343,7 +363,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                 'resize' => [
                     'strategy' => 'landscape',
                     'width' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -355,7 +376,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeAuto(100, 100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -365,7 +386,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'strategy' => 'auto',
                     'width' => 100,
                     'height' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -377,7 +399,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeFit(100, 100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -387,7 +409,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'strategy' => 'fit',
                     'width' => 100,
                     'height' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -399,7 +422,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeCrop(100, 100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -409,7 +432,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'strategy' => 'crop',
                     'width' => 100,
                     'height' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -421,7 +445,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeSquare(100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -430,7 +454,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                 'resize' => [
                     'strategy' => 'square',
                     'size' => 100
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -442,7 +467,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeFill(100, 100);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -453,7 +478,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'width' => 100,
                     'height' => 100,
                     'background' => 'rgba(255, 255, 255, 1.0)'
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -465,7 +491,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeFill(100, 100, 0, 0, 0, .5);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -476,7 +502,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'width' => 100,
                     'height' => 100,
                     'background' => 'rgba(0, 0, 0, 0.5)'
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -488,7 +515,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->resizeFill(100, 100, 0, 0, 0, 0);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -499,7 +526,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'width' => 100,
                     'height' => 100,
                     'background' => 'rgba(0, 0, 0, 0.0)'
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -513,7 +541,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
             ->resizeSquare(100)
             ->resizeFill(100, 100, 0, 0, 0, .5);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -524,7 +552,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'width' => 100,
                     'height' => 100,
                     'background' => 'rgba(0, 0, 0, 0.5)'
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -536,7 +565,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('gif');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -546,7 +575,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'gif',
                     'background'     => '#FFFFFF',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -558,7 +588,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('jpeg');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -568,7 +598,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'jpeg',
                     'background'     => '#FFFFFF',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -580,7 +611,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('png');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -590,7 +621,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'png',
                     'background'     => '#FFFFFF',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -602,7 +634,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('gif', '#333');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -612,7 +644,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'gif',
                     'background'     => '#333',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -624,7 +657,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('gif', '#B4DA55');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -634,7 +667,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'gif',
                     'background'     => '#B4DA55',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -646,7 +680,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('gif', 'rgb(1, 1, 1)');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -656,7 +690,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'gif',
                     'background'     => 'rgb(1, 1, 1)',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -668,7 +703,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('gif', 'rgba(1, 1, 1, .6)');
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -678,7 +713,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'gif',
                     'background'     => 'rgba(1, 1, 1, .6)',
                     'keep_extension' => false
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );
@@ -690,7 +726,7 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
 
         $krakenOptions->convertTo('gif', '#B4DA55', true);
 
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'auth' => [
                     'api_key' => 'fake_key',
@@ -700,7 +736,8 @@ class KrakenOptionsTest extends \PHPUnit_Framework_TestCase
                     'format'         => 'gif',
                     'background'     => '#B4DA55',
                     'keep_extension' => true
-                ]
+                ],
+                'wait' => true
             ],
             $krakenOptions->getConfiguredOptions()
         );

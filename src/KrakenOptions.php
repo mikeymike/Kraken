@@ -138,18 +138,24 @@ class KrakenOptions
      * @param string $secret
      * @param string $bucket
      * @param string $region
+     * @param string $path
+     * @param bool   $public
+     * @param array  $headers
      *
      * @return $this
      */
-    public function saveToAmazonS3($key, $secret, $bucket, $region)
+    public function saveToAmazonS3($key, $secret, $bucket, $region, $path = '/', $public = true, $headers = [])
     {
         $this->cleanStorageOptions();
 
         $this->options['s3_store'] = [
-            'key'    => $key,
-            'secret' => $secret,
-            'bucket' => $bucket,
-            'region' => $region
+            'key'     => $key,
+            'secret'  => $secret,
+            'bucket'  => $bucket,
+            'region'  => $region,
+            'path'    => $path,
+            'acl'     => $public ? 'public_read' : 'private',
+            'headers' => $headers
         ];
 
         return $this;
@@ -159,17 +165,19 @@ class KrakenOptions
      * @param string $user
      * @param string $key
      * @param string $container
+     * @param string $path
      *
      * @return $this
      */
-    public function saveToRackspace($user, $key, $container)
+    public function saveToRackspace($user, $key, $container, $path = '/')
     {
         $this->cleanStorageOptions();
 
         $this->options['cf_store'] = [
             'user'      => $user,
             'key'       => $key,
-            'container' => $container
+            'container' => $container,
+            'path'      => $path
         ];
 
         return $this;
@@ -179,17 +187,19 @@ class KrakenOptions
      * @param string $account
      * @param string $key
      * @param string $container
+     * @param string $path
      *
      * @return $this
      */
-    public function saveToAzure($account, $key, $container)
+    public function saveToAzure($account, $key, $container, $path = '/')
     {
         $this->cleanStorageOptions();
 
         $this->options['azure_store'] = [
             'account'   => $account,
             'key'       => $key,
-            'container' => $container
+            'container' => $container,
+            'path'      => $path
         ];
 
         return $this;
