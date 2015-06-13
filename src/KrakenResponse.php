@@ -115,7 +115,7 @@ class KrakenResponse
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getFilename()
     {
@@ -123,7 +123,7 @@ class KrakenResponse
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getOriginalSize()
     {
@@ -131,7 +131,7 @@ class KrakenResponse
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getKrakedSize()
     {
@@ -139,7 +139,7 @@ class KrakenResponse
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getSavedBytes()
     {
@@ -147,7 +147,7 @@ class KrakenResponse
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getKrakedUrl()
     {
@@ -155,7 +155,7 @@ class KrakenResponse
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getError()
     {
