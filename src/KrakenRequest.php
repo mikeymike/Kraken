@@ -2,11 +2,13 @@
 
 namespace MikeyMike\Kraken;
 
+use Buzz\Message\Form\FormUpload;
 use MikeyMike\Kraken\KrakenOptions;
 use MikeyMike\Kraken\KrakenImage;
 use MikeyMike\Kraken\KrakenResponse;
 use Buzz\Browser;
 use Buzz\Message\Response;
+use Buzz\Exception\ClientException;
 
 /**
  * Class Kraken
@@ -24,7 +26,8 @@ class KrakenRequest
 
     /**
      * @param KrakenOptions $options
-     * @param null $url
+     * @param Browser       $buzz
+     * @param string|null   $url
      *
      * @return KrakenResponse
      */
@@ -43,7 +46,7 @@ class KrakenRequest
                 ['Content-Type' => 'application/json'],
                 json_encode($options->getConfiguredOptions())
             );
-        } catch (\Exception $e) {
+        } catch (ClientException $e) {
             var_dump($e->getMessage());
 //            throw $e;
         }
@@ -52,11 +55,26 @@ class KrakenRequest
     }
 
     /**
-     * @param KrakenImage $image
+     * @param KrakenOptions $options
+     * @param Browser       $buzz
+     * @param KrakenImage   $image
+     *
+     * @return KrakenResponse
      */
-    public function compressImage(KrakenImage $image)
+    public static function compressImage(KrakenOptions $options, Browser $buzz, KrakenImage $image)
     {
+        $apiEndpoint = sprintf('%s/v1/url', self::API_URL);
 
+        // TODO: THIS
+
+        $buzz->setClient(new \Buzz\Client\Curl);
+        $response = $buzz->post(
+            $apiEndpoint,
+            ['Content-Type' => 'application/json'],
+            json_encode($options->getConfiguredOptions())
+        );
+
+        return self::parseResponse($response);
     }
 
     /**
@@ -64,9 +82,9 @@ class KrakenRequest
      *
      * @param Response $response
      *
-     * @return \MikeyMike\Kraken\KrakenResponse
+     * @return KrakenResponse
      */
-    private static function parseResponse(Response $response)
+    private function parseResponse(Response $response)
     {
         $body = json_decode($response->getContent());
 

@@ -27,10 +27,26 @@ class KrakenImage
      * Factory method from path
      *
      * @param string $path
+     *
      * @return KrakenImage
+     * @throws \InvalidArgumentException
      */
     public static function fromPath($path)
     {
+        $path = realpath($path);
+
+        if (!file_exists($path)) {
+            throw new \InvalidArgumentException(sprintf('No valid file at path %s', $path));
+        }
+
         return new self($path);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
     }
 }
