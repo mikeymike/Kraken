@@ -2,14 +2,13 @@
 
 namespace MikeyMike\Kraken;
 
-use Buzz\Message\Form\FormUpload;
 use MikeyMike\Kraken\KrakenOptions;
 use MikeyMike\Kraken\KrakenImage;
 use MikeyMike\Kraken\KrakenResponse;
 use Curl\Curl;
 
 /**
- * Class Kraken
+ * Class KrakenRequest
  *
  * @package MikeyMike\Kraken
  * @author Michael Woodward <mikeymike.mw@gmail.com>
