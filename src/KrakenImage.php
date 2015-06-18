@@ -35,8 +35,14 @@ class KrakenImage
     {
         $path = realpath($path);
 
-        if (!file_exists($path) || !in_array(exif_imagetype($path), ['jpg', 'png', 'gif'])) {
-            throw new \InvalidArgumentException(sprintf('No valid image at path %s', $path));
+        if (!file_exists($path)) {
+            throw new \InvalidArgumentException(sprintf('No valid file at path %s', $path));
+        }
+
+        $supportedTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF];
+
+        if (!in_array(exif_imagetype($path), $supportedTypes)) {
+             throw new \InvalidArgumentException('Unsupported image type');
         }
 
         return new self($path);
