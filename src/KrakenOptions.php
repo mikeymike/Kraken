@@ -120,6 +120,7 @@ class KrakenOptions
 
     /**
      * @param bool $useWait
+     *
      * @return $this
      */
     public function waitForResponse($useWait = true)

@@ -6,9 +6,7 @@ use Buzz\Message\Form\FormUpload;
 use MikeyMike\Kraken\KrakenOptions;
 use MikeyMike\Kraken\KrakenImage;
 use MikeyMike\Kraken\KrakenResponse;
-use Buzz\Browser;
-use Buzz\Message\Response;
-use Buzz\Exception\ClientException;
+use Curl\Curl;
 
 /**
  * Class Kraken
@@ -26,12 +24,11 @@ class KrakenRequest
 
     /**
      * @param KrakenOptions $options
-     * @param Browser       $buzz
      * @param string|null   $url
      *
      * @return KrakenResponse
      */
-    public static function compressFromUrl(KrakenOptions $options, Browser $buzz, $url = null)
+    public static function compressFromUrl(KrakenOptions $options, $url = null)
     {
         if ($url !== null) {
             $options->setSourceImageUrl($url);
@@ -39,65 +36,54 @@ class KrakenRequest
 
         $apiEndpoint = sprintf('%s/v1/url', self::API_URL);
 
-        try {
-            $buzz->setClient(new \Buzz\Client\Curl);
-            $response = $buzz->post(
-                $apiEndpoint,
-                ['Content-Type' => 'application/json'],
-                json_encode($options->getConfiguredOptions())
-            );
-        } catch (ClientException $e) {
-            var_dump($e->getMessage());
-//            throw $e;
-        }
+        $curl = new Curl();
+        $curl->post($apiEndpoint, json_encode($options->getConfiguredOptions()));
 
-        return self::parseResponse($response);
+        return self::parseResponse($curl);
     }
 
     /**
      * @param KrakenOptions $options
-     * @param Browser       $buzz
      * @param KrakenImage   $image
      *
      * @return KrakenResponse
      */
-    public static function compressImage(KrakenOptions $options, Browser $buzz, KrakenImage $image)
+    public static function compressImage(KrakenOptions $options, KrakenImage $image)
     {
-        $apiEndpoint = sprintf('%s/v1/url', self::API_URL);
+        $apiEndpoint = sprintf('%s/v1/upload', self::API_URL);
 
-        // TODO: THIS
+        $file = class_exists('CURLFile')
+            ? new \CURLFile($image->getPath())
+            : sprintf('@%s', $image->getPath());
 
-        $buzz->setClient(new \Buzz\Client\Curl);
-        $response = $buzz->post(
-            $apiEndpoint,
-            ['Content-Type' => 'application/json'],
-            json_encode($options->getConfiguredOptions())
-        );
+        $curl = new Curl();
+        $curl->post($apiEndpoint, [
+           'file' => $file,
+           'data' => json_encode($options->getConfiguredOptions())
+        ]);
 
-        return self::parseResponse($response);
+        return self::parseResponse($curl);
     }
 
     /**
-     * Convert Buzz response to KrakenResponse
+     * Convert Curl response to KrakenResponse
      *
-     * @param Response $response
+     * @param Curl $response
      *
      * @return KrakenResponse
      */
-    private function parseResponse(Response $response)
+    private function parseResponse(Curl $curl)
     {
-        $body = json_decode($response->getContent());
-
-        if ($response->getStatusCode() === 200) {
-            return KrakenResponse::success(
-                $body->file_name,
-                $body->original_size,
-                $body->kraked_size,
-                $body->saved_bytes,
-                $body->kraked_url
-            );
+        if ($curl->error) {
+            return KrakenResponse::error($curl->error_code, $curl->error_message);
         }
 
-        return KrakenResponse::error($response->getStatusCode(), $body->error);
+        return KrakenResponse::success(
+            $curl->response->file_name,
+            $curl->response->original_size,
+            $curl->response->kraked_size,
+            $curl->response->saved_bytes,
+            $curl->response->kraked_url
+        );
     }
 }

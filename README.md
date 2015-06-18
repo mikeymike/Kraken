@@ -16,7 +16,6 @@ Common use case, compress from url:
 ```php
 use MikeyMike\Kraken\Kraken;
 use MikeyMike\Kraken\KrakenOptions;
-use Buzz\Browser;
 
 $krakenOptions = new KrakenOptions('api_key', 'api_secret');
 
@@ -24,7 +23,6 @@ $krakenOptions = new KrakenOptions('api_key', 'api_secret');
 
 $krakenResponse = KrakenRequest::compressFromUrl(
     $options,
-    new Browser,
     'http://awesome-website.com/images/header.png'
 );
 ```

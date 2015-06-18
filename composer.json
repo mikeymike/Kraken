@@ -13,7 +13,7 @@
         "squizlabs/php_codesniffer": "^2.3"
     },
     "require": {
-        "kriswallsmith/Buzz": "^0.14.0"
+        "php-curl-class/php-curl-class": "^3.5"
     },
     "autoload" : {
         "psr-4" : {
