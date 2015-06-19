@@ -1,24 +1,14 @@
 <?php
 
-namespace MikeyMike\Kraken;
+namespace MikeyMike\Kraken\Response;
 
 /**
  * Class KrakenResponse
  * @package MikeyMike\Kraken
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class KrakenResponse
+class Compress extends Response
 {
-    /**
-     * @var int
-     */
-    private $code;
-
-    /**
-     * @var bool
-     */
-    private $success;
-
     /**
      * @var string
      */
@@ -45,11 +35,6 @@ class KrakenResponse
     private $krakedUrl;
 
     /**
-     * @var string
-     */
-    private $error;
-
-    /**
      * KrakenResponse constructor
      *
      * @param int    $code
@@ -62,38 +47,23 @@ class KrakenResponse
     }
 
     /**
-     * @param $filename
-     * @param $originalSize
-     * @param $krakedSize
-     * @param $savedBytes
-     * @param $krakedUrl
+     * @param string $filename
+     * @param string $originalSize
+     * @param string $krakedSize
+     * @param string $savedBytes
+     * @param string $krakedUrl
      *
-     * return KrakenResponse
+     * @return Response
      */
     public static function success($filename, $originalSize, $krakedSize, $savedBytes, $krakedUrl)
     {
-        $response = new self(200, true);
+        $response = parent::success();
 
         $response->filename     = $filename;
         $response->originalSize = $originalSize;
         $response->krakedSize   = $krakedSize;
         $response->savedBytes   = $savedBytes;
         $response->krakedUrl    = $krakedUrl;
-
-        return $response;
-    }
-
-    /**
-     * @param $code
-     * @param $reason
-     *
-     * @return KrakenResponse
-     */
-    public static function error($code, $reason)
-    {
-        $response = new self($code, false);
-
-        $response->error = $reason;
 
         return $response;
     }

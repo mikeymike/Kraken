@@ -14,16 +14,16 @@ See examples for different use cases.
 
 Common use case, compress from url: 
 ```php
-use MikeyMike\Kraken\Kraken;
 use MikeyMike\Kraken\KrakenOptions;
+use MikeyMike\Kraken\Request\Compress;
 
-$krakenOptions = new KrakenOptions('api_key', 'api_secret');
+$options = new KrakenOptions('api_key', 'api_secret');
 
 // Set options using KrakenOptions methods
 
-$krakenResponse = KrakenRequest::compressFromUrl(
+$response = Compress::fromUrl(
     $options,
-    'http://awesome-website.com/images/header.png'
+    'https://kraken-nekkraug.netdna-ssl.com/assets/images/kraken-logo-4@2x.png'
 );
 ```
 

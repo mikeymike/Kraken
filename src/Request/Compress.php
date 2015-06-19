@@ -1,39 +1,39 @@
 <?php
 
-namespace MikeyMike\Kraken;
+namespace MikeyMike\Kraken\Request;
 
 use MikeyMike\Kraken\KrakenOptions;
 use MikeyMike\Kraken\KrakenImage;
-use MikeyMike\Kraken\KrakenResponse;
+use MikeyMike\Kraken\Response\Compress as CompressResponse;
 use Curl\Curl;
 
 /**
- * Class KrakenRequest
+ * Class Compress
  *
  * @package MikeyMike\Kraken
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class KrakenRequest
+class Compress
 {
 
     /**
      * Base API URL for all requests
      */
-    const API_URL = "https://api.kraken.io";
+    const API_URL = "https://api.kraken.io/v1";
 
     /**
      * @param KrakenOptions $options
      * @param string|null   $url
      *
-     * @return KrakenResponse
+     * @return CompressResponse
      */
-    public static function compressFromUrl(KrakenOptions $options, $url = null)
+    public static function fromUrl(KrakenOptions $options, $url = null)
     {
         if ($url !== null) {
             $options->setSourceImageUrl($url);
         }
 
-        $apiEndpoint = sprintf('%s/v1/url', self::API_URL);
+        $apiEndpoint = sprintf('%s/url', self::API_URL);
 
         $curl = new Curl();
         $curl->post($apiEndpoint, json_encode($options->getConfiguredOptions()));
@@ -45,11 +45,11 @@ class KrakenRequest
      * @param KrakenOptions $options
      * @param KrakenImage   $image
      *
-     * @return KrakenResponse
+     * @return CompressResponse
      */
-    public static function compressImage(KrakenOptions $options, KrakenImage $image)
+    public static function fromFile(KrakenOptions $options, KrakenImage $image)
     {
-        $apiEndpoint = sprintf('%s/v1/upload', self::API_URL);
+        $apiEndpoint = sprintf('%s/upload', self::API_URL);
 
         $file = class_exists('CURLFile')
             ? new \CURLFile($image->getPath())
@@ -67,17 +67,17 @@ class KrakenRequest
     /**
      * Convert Curl response to KrakenResponse
      *
-     * @param Curl $response
+     * @param Curl $curl
      *
-     * @return KrakenResponse
+     * @return CompressResponse
      */
     private function parseResponse(Curl $curl)
     {
         if ($curl->error) {
-            return KrakenResponse::error($curl->error_code, $curl->error_message);
+            return CompressResponse::error($curl->error_code, $curl->error_message);
         }
 
-        return KrakenResponse::success(
+        return CompressResponse::success(
             $curl->response->file_name,
             $curl->response->original_size,
             $curl->response->kraked_size,
